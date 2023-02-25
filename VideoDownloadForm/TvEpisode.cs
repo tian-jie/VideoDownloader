@@ -7,6 +7,8 @@ namespace VideoDownloadForm
         public string Url { get; set; }
 
         public List<Episode> Episodes { get; set; }
+
+        public DownloadStatus DownloadStatus { get; set; }
     }
 
     public class Episode
