@@ -1,10 +1,10 @@
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace VideoDownloadForm
 {
     public partial class Form1 : Form
     {
-        List<TreeNode> _rootTreeNodes = new List<TreeNode>();
         VideoDownloadManager _videoDownloadManager;
 
         public Form1()
@@ -27,19 +27,38 @@ namespace VideoDownloadForm
             treeNode.Name = "节点名称";
             treeNode.Text = "根节点2";
 
-            _rootTreeNodes.Add(treeNode);
+            //_rootTreeNodes.Add(treeNode);
             //tvStatus.Nodes.Add(treeNode);
         }
 
         private void UpdateTreeView()
         {
             tvStatus.Nodes.Clear();
-            tvStatus.Nodes.AddRange(_rootTreeNodes.ToArray());
+            tvStatus.Nodes.AddRange(_videoDownloadManager.TreeNodes.ToArray());
+            tvStatus.ExpandAll();
         }
 
         private void btnUpdateTreeview_Click(object sender, EventArgs e)
         {
             UpdateTreeView();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Debug.WriteLine($"Time up to UpdateTreeView");
+            UpdateTreeView();
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x0014) // 禁掉清除背景消息WM_ERASEBKGND
+                return;
+            base.WndProc(ref m);
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _videoDownloadManager.Stop();
         }
 
         //private async Task<string> GetHtml(string url)

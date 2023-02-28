@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tbUrl = new System.Windows.Forms.TextBox();
             this.btnDownload = new System.Windows.Forms.Button();
             this.tvStatus = new System.Windows.Forms.TreeView();
             this.button1 = new System.Windows.Forms.Button();
             this.btnUpdateTreeview = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // tbUrl
@@ -41,7 +43,7 @@
             this.tbUrl.Name = "tbUrl";
             this.tbUrl.Size = new System.Drawing.Size(1313, 31);
             this.tbUrl.TabIndex = 0;
-            this.tbUrl.Text = "https://m.ik25.com/vodplay/280659-1-1.html";
+            this.tbUrl.Text = "https://m.ik25.com/vodplay/287576-1-1.html";
             // 
             // btnDownload
             // 
@@ -55,6 +57,7 @@
             // 
             // tvStatus
             // 
+            this.tvStatus.FullRowSelect = true;
             this.tvStatus.Location = new System.Drawing.Point(12, 61);
             this.tvStatus.Name = "tvStatus";
             this.tvStatus.Size = new System.Drawing.Size(1495, 823);
@@ -80,6 +83,12 @@
             this.btnUpdateTreeview.UseVisualStyleBackColor = true;
             this.btnUpdateTreeview.Click += new System.EventHandler(this.btnUpdateTreeview_Click);
             // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -92,6 +101,7 @@
             this.Controls.Add(this.tbUrl);
             this.Name = "Form1";
             this.Text = "YR";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -104,5 +114,6 @@
         private TreeView tvStatus;
         private Button button1;
         private Button btnUpdateTreeview;
+        private System.Windows.Forms.Timer timer1;
     }
 }

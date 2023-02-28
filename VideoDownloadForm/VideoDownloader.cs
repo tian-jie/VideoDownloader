@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 
 namespace VideoDownloadForm
@@ -11,16 +12,41 @@ namespace VideoDownloadForm
         private List<VideoDownloadThread> _videoDownloadThreads = new List<VideoDownloadThread>();
 
         const string WEBSITE = "https://m.ik25.com";
+        const int THREAD_NO = 12;
+
+        public List<TreeNode> TreeNodes
+        {
+            get
+            {
+                List<TreeNode> list = new List<TreeNode>();
+                lock (_tvsLocker)
+                {
+                    foreach(var tv in _tvs)
+                    {
+                        var tvNode = new TreeNode(tv.Name);
+                        list.Add(tvNode);
+                        foreach (var e in tv.Episodes)
+                        {
+                            var eNode = new TreeNode($"{ e.Name } - 【{e.DownloadStatus}】 -  {e.DownloadText}");
+                            tvNode.Nodes.Add(eNode);
+                        }
+                    }
+                }
+                return list;
+            }
+            private set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
 
         public VideoDownloadManager()
         {
-            for (var i = 0; i < 1; i++)
+            for (var i = 0; i < THREAD_NO; i++)
             {
                 _videoDownloadThreads.Add(new VideoDownloadThread(i, $"Thread {i}"));
             }
-
-            StartDownload();
         }
 
         public async Task AddTv(string url)
@@ -90,10 +116,18 @@ namespace VideoDownloadForm
 
         public void StartDownload()
         {
-            // 开启4个线程启动下载
-            foreach(var thread in _videoDownloadThreads)
+            // 开启N个线程启动下载
+            foreach (var thread in _videoDownloadThreads)
             {
                 thread.Run();
+            }
+        }
+
+        internal void Stop()
+        {
+            foreach (var thread in _videoDownloadThreads)
+            {
+                thread.Stop();
             }
         }
 
