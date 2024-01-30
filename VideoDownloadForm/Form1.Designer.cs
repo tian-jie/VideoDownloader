@@ -43,7 +43,7 @@
             this.tbUrl.Name = "tbUrl";
             this.tbUrl.Size = new System.Drawing.Size(1313, 31);
             this.tbUrl.TabIndex = 0;
-            this.tbUrl.Text = "https://m.ik25.com/vodplay/287576-1-1.html";
+            this.tbUrl.Text = "https://ak84.com/playr/150660-1-1.html";
             // 
             // btnDownload
             // 

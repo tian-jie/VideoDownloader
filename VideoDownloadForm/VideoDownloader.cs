@@ -1,6 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers.Text;
+using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace VideoDownloadForm
 {
@@ -11,8 +15,8 @@ namespace VideoDownloadForm
 
         private List<VideoDownloadThread> _videoDownloadThreads = new List<VideoDownloadThread>();
 
-        const string WEBSITE = "https://m.ik25.com";
-        const int THREAD_NO = 12;
+        const string WEBSITE = "https://ak84.com/";
+        const int THREAD_NO = 4;
 
         public List<TreeNode> TreeNodes
         {
@@ -64,19 +68,21 @@ namespace VideoDownloadForm
             var response = await httpClient.GetAsync(url);
             var html = await response.Content.ReadAsStringAsync();
             {
-                Regex regex = new Regex(@">《(.*?)》第\d*?集");
+                // var vod_name = '这个女配有点甜', vod_url = window.location.href
+                Regex regex = new Regex(@"var vod_name = '(.*?)', vod_url = window\.location\.href");
                 var match = regex.Match(html);
 
                 var ses = match.Groups[1].Value;
                 tv.Name = ses;
             }
             {
-                Regex regex = new Regex("<ul class=\"stui-content__playlist clearfix\">(.*?)</ul>");
+                //Regex regex = new Regex(@"<ul class=""stui-content__playlist clearfix column8"">([\\w\\W]*?)</ul>");
+                Regex regex = new Regex(@"(<li id=""\d1"" class=""active""><a[\w\W]*?)</ul>");
                 var match = regex.Match(html);
 
                 var ses = match.Groups[1].Value;
 
-                Regex regex1 = new Regex("<li.*?><a href=\"(.*?)\">第(\\d*?)集</a></li>");
+                Regex regex1 = new Regex("<li id=\"\\d+?\".*?><a.*?href=\"(.*?)\".*?>第(\\d*?)集</a></li>");
                 var matches1 = regex1.Matches(ses);
                 foreach (Match match1 in matches1)
                 {
@@ -106,12 +112,13 @@ namespace VideoDownloadForm
             var response = await httpClient.GetAsync(url);
             var html = await response.Content.ReadAsStringAsync();
 
-            Regex regex = new Regex("\"url\":\"(https:\\\\/\\\\/.*?.m3u8)\"");
+            Regex regex = new Regex("var player_aaaa=.*?vod_data.*?\"url\":\"(.*?)\"");
             var match = regex.Match(html);
-
             var ses = match.Groups[1].Value.Replace("\\", "");
+            var decodedUrl = Encoding.Default.GetString(Convert.FromBase64String(ses));
+            decodedUrl = HttpUtility.UrlDecode(decodedUrl);
 
-            return ses;
+            return decodedUrl;
         }
 
         public void StartDownload()
