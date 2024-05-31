@@ -15,7 +15,7 @@ namespace VideoDownloadForm
 
         private List<VideoDownloadThread> _videoDownloadThreads = new List<VideoDownloadThread>();
 
-        const string WEBSITE = "https://ak84.com/";
+        const string WEBSITE = "https://www.jxshiye.cn/";
         const int THREAD_NO = 4;
 
         public List<TreeNode> TreeNodes
@@ -67,9 +67,11 @@ namespace VideoDownloadForm
             HttpClient httpClient = new HttpClient();
             var response = await httpClient.GetAsync(url);
             var html = await response.Content.ReadAsStringAsync();
+            // 先找这个电视剧的名字
             {
                 // var vod_name = '这个女配有点甜', vod_url = window.location.href
-                Regex regex = new Regex(@"var vod_name = '(.*?)', vod_url = window\.location\.href");
+                // Regex regex = new Regex(@"var vod_name = '(.*?)', vod_url = window\.location\.href");
+                Regex regex = new Regex("\\<div class=\"player_title\".*?\\.html\"\\>(.*?)\\</a\\>");
                 var match = regex.Match(html);
 
                 var ses = match.Groups[1].Value;
@@ -77,12 +79,12 @@ namespace VideoDownloadForm
             }
             {
                 //Regex regex = new Regex(@"<ul class=""stui-content__playlist clearfix column8"">([\\w\\W]*?)</ul>");
-                Regex regex = new Regex(@"(<li id=""\d1"" class=""active""><a[\w\W]*?)</ul>");
+                Regex regex = new Regex("<div class=\"player_playlist\">([\\w\\W]*?)</div>");
                 var match = regex.Match(html);
 
                 var ses = match.Groups[1].Value;
 
-                Regex regex1 = new Regex("<li id=\"\\d+?\".*?><a.*?href=\"(.*?)\".*?>第(\\d*?)集</a></li>");
+                Regex regex1 = new Regex("<li class=\"list4\".*?><a.*?href=\"(.*?)\".*?>第(\\d*?)集</a></li>");
                 var matches1 = regex1.Matches(ses);
                 foreach (Match match1 in matches1)
                 {
@@ -112,13 +114,14 @@ namespace VideoDownloadForm
             var response = await httpClient.GetAsync(url);
             var html = await response.Content.ReadAsStringAsync();
 
-            Regex regex = new Regex("var player_aaaa=.*?vod_data.*?\"url\":\"(.*?)\"");
+            Regex regex = new Regex("var zanpiancms_player = .*?\"url\":\"(.*?)\"");
             var match = regex.Match(html);
             var ses = match.Groups[1].Value.Replace("\\", "");
-            var decodedUrl = Encoding.Default.GetString(Convert.FromBase64String(ses));
-            decodedUrl = HttpUtility.UrlDecode(decodedUrl);
+            //var decodedUrl = Encoding.Default.GetString(Convert.FromBase64String(ses));
+            //decodedUrl = HttpUtility.UrlDecode(decodedUrl);
 
-            return decodedUrl;
+            //return decodedUrl;
+            return ses;
         }
 
         public void StartDownload()
